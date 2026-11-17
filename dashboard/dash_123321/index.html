@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Статистика публикаций — «За 30 секунд»</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f4f3ef; --surface: #fcfcfb; --line: #e4e2dc; --track: #ecebe6;
+  --text: #0b0b0b; --text2: #52514e; --muted: #8a8880;
+  --youtube: #2a78d6; --tiktok: #eb6834; --instagram: #1baf7a;
+  --good: #0ca30c; --critical: #d03b3b; --warning: #fab219;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #111110; --surface: #1a1a19; --line: #2e2e2b; --track: #262624;
+    --text: #f0efec; --text2: #c3c2b7; --muted: #8a8880;
+    --youtube: #3987e5; --tiktok: #d95926; --instagram: #199e70;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 18px; }
+h1 { font-size: 24px; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 16px; margin: 0 0 4px; }
+.sub { color: var(--text2); font-size: 13px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 0 0 18px; align-items: center; }
+.seg { display: inline-flex; background: var(--track); border-radius: 9px; padding: 3px; }
+.seg button { border: 0; background: transparent; color: var(--text2); font: inherit; font-size: 13px;
+  padding: 5px 12px; border-radius: 7px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.seg button:focus-visible { outline: 2px solid var(--youtube); outline-offset: 1px; }
+.flabel { font-size: 12px; color: var(--muted); margin-right: 6px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.tile .label { font-size: 13px; color: var(--text2); }
+.tile .value { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.tile .delta { font-size: 12px; color: var(--text2); min-height: 17px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--text2); margin: 6px 0 2px; }
+.key { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.k-youtube { background: var(--youtube); } .k-tiktok { background: var(--tiktok); } .k-instagram { background: var(--instagram); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: 12px; font-weight: 600; color: var(--text2); white-space: nowrap; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+.cardhead { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+.eps { display: grid; grid-template-columns: repeat(auto-fill, minmax(470px, 1fr)); gap: 12px; }
+.epc { display: grid; grid-template-columns: 108px 1fr; gap: 6px 16px; border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.epc .thumb { grid-row: span 2; width: 108px; aspect-ratio: 9 / 16; border-radius: 8px; overflow: hidden; background: var(--track);
+  display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 26px; font-weight: 650; }
+.epc .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.epc .title { font-weight: 600; font-size: 15px; line-height: 1.3; }
+.epc .meta { font-size: 12.5px; color: var(--text2); margin-top: 2px; }
+.epc table { font-size: 13.5px; align-self: end; }
+.epc th, .epc td { padding: 6px 4px; }
+.epc th { font-weight: 500; font-size: 11.5px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.epc td.net { white-space: nowrap; font-weight: 500; }
+.epc td.wait { color: var(--text2); font-size: 12.5px; }
+.epc td.go { width: 22px; text-align: right; }
+.epc td.go a { text-decoration: none; color: var(--text2); display: inline-block; padding: 0 2px; }
+.epc td.go a:hover { color: var(--text); }
+.epc tbody tr:hover td { background: color-mix(in srgb, var(--track) 55%, transparent); }
+@media (max-width: 560px) {
+  .eps { grid-template-columns: 1fr; }
+  .epc { grid-template-columns: 72px 1fr; }
+  .epc .thumb { width: 72px; grid-row: auto; }
+  .epc table { grid-column: 1 / -1; font-size: 13px; }
+  .epc th:nth-child(5), .epc td.num:nth-child(5) { display: none; }   /* репосты — в подсказке по нажатию */
+  .card { padding: 14px 12px; }
+}
+.scroll { overflow-x: auto; }
+.bar { display: flex; gap: 2px; height: 10px; min-width: 90px; width: 100%; }
+.bar i { display: block; height: 100%; border-radius: 3px; min-width: 2px; }
+.badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line); color: var(--text2); }
+.empty { color: var(--text2); font-size: 14px; padding: 18px 0; }
+.status { font-size: 13px; }
+.status.err { color: var(--critical); font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.grid2 .card { margin-bottom: 0; }
+a { color: inherit; }
+.warn { border-left: 3px solid var(--warning); padding: 6px 12px; font-size: 13px; color: var(--text2); margin: 0 0 12px; background: var(--surface); border-radius: 0 8px 8px 0; }
+#tip { position: fixed; pointer-events: none; background: var(--text); color: var(--surface); font-size: 12.5px; padding: 7px 10px;
+  border-radius: 8px; opacity: 0; transition: opacity .08s; z-index: 10; max-width: 280px; line-height: 1.5; }
+#tip .key { border: 1px solid var(--surface); }
+svg text { fill: var(--text2); font-size: 11.5px; font-family: inherit; }
+.rank { color: var(--muted); font-variant-numeric: tabular-nums; width: 28px; }
+ol.req { margin: 6px 0 0; padding: 0; list-style: none; }
+ol.req li { display: grid; grid-template-columns: 28px 1fr 56px; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+ol.req li:last-child { border-bottom: 0; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Статистика публикаций</h1>
+    <span class="sub" id="updated"></span>
+  </header>
+  <div id="warnings"></div>
+
+  <div class="filters" role="group" aria-label="Фильтры">
+    <span><span class="flabel">Язык</span><span class="seg" data-filter="lang">
+      <button data-v="all">Все</button><button data-v="ru">Русский</button><button data-v="en">English</button></span></span>
+    <span><span class="flabel">Соцсеть</span><span class="seg" data-filter="net">
+      <button data-v="all">Все</button><button data-v="youtube">YouTube</button><button data-v="tiktok">TikTok</button><button data-v="instagram">Instagram</button></span></span>
+    <span><span class="flabel">Период графика</span><span class="seg" data-filter="period">
+      <button data-v="7">7 дней</button><button data-v="30">30 дней</button><button data-v="0">Всё время</button></span></span>
+  </div>
+
+  <section class="tiles" id="tiles" aria-label="Общая статистика"></section>
+
+  <section class="card">
+    <div class="cardhead">
+      <div><h2>Выпуски</h2>
+      <div class="sub">Каждый ролик и его показатели в трёх соцсетях. Наведите на строку, чтобы увидеть все метрики; стрелка открывает пост.</div></div>
+      <span><span class="flabel">Порядок</span><span class="seg" data-filter="sort">
+        <button data-v="new">Сначала новые</button><button data-v="views">По просмотрам</button></span></span>
+    </div>
+    <div class="eps" id="episodes"></div>
+  </section>
+
+  <section class="card">
+    <h2>Просмотры по дням</h2>
+    <div class="sub">Прирост просмотров за сутки по всем вышедшим постам. Buffer обновляет цифры раз в день.</div>
+    <div class="legend" id="lineLegend"></div>
+    <div id="line"></div>
+  </section>
+
+  <section class="card">
+    <h2>Каналы</h2>
+    <div class="sub">Итоги по каждому каналу за всё время.</div>
+    <div class="scroll"><table id="channels"></table></div>
+  </section>
+
+  <section class="card" id="reqCard">
+    <h2>О ком просят снять</h2>
+    <div class="sub" id="reqSub"></div>
+    <ol class="req" id="req"></ol>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Очередь</h2>
+      <div class="sub">Ближайшие запланированные посты и сбои публикации.</div>
+      <div class="scroll"><table id="queue"></table></div>
+    </section>
+    <section class="card">
+      <h2>Расписание каналов</h2>
+      <div class="sub">Слоты из настроек Buffer — в них сервис ставит посты (время канала).</div>
+      <div class="scroll"><table id="sched"></table></div>
+    </section>
+  </div>
+</main>
+<div id="tip" role="status"></div>
+<script>
+const DATA = {"latest":{"generatedAt":"2026-11-17T10:13:38Z","channels":[{"id":"6af5faea62b70b94b00b6810","lang":"ru","service":"youtube","name":"Вот те факт!","timezone":"Asia/Nicosia","paused":false,"schedule":[{"day":"mon","paused":false,"times":["20:47","21:31"]},{"day":"tue","paused":false,"times":["20:16","21:00"]},{"day":"wed","paused":false,"times":["20:40","21:25"]},{"day":"thu","paused":false,"times":["19:53","20:40"]},{"day":"fri","paused":false,"times":["17:57","18:13"]},{"day":"sat","paused":false,"times":["12:57","19:06"]},{"day":"sun","paused":false,"times":["19:41","20:28"]}]},{"id":"6af5fa7662b70b94b00b63ec","lang":"ru","service":"tiktok","name":"factoorial","timezone":"Asia/Nicosia","paused":false,"schedule":[{"day":"mon","paused":false,"times":["08:40","09:55"]},{"day":"tue","paused":false,"times":["06:50","07:35"]},{"day":"wed","paused":false,"times":["06:15","22:58"]},{"day":"thu","paused":false,"times":["21:26","22:10"]},{"day":"fri","paused":false,"times":["20:23","21:39"]},{"day":"sat","paused":false,"times":["18:45","19:00"]},{"day":"sun","paused":false,"times":["09:18","10:27"]}]},{"id":"6af5f9db62b70b94b00b5dfc","lang":"ru","service":"instagram","name":"factoorial","timezone":"Asia/Nicosia","paused":false,"schedule":[{"day":"mon","paused":false,"times":["18:06","20:55"]},{"day":"tue","paused":false,"times":["18:24","19:40"]},{"day":"wed","paused":false,"times":["10:53","18:59"]},{"day":"thu","paused":false,"times":["10:15","11:59"]},{"day":"fri","paused":false,"times":["06:16","07:31"]},{"day":"sat","paused":false,"times":["06:40","22:36"]},{"day":"sun","paused":false,"times":["19:25","22:47"]}]},{"id":"6af72c8562b70b94b01c30e4","lang":"en","service":"youtube","name":"Whaaatafact","timezone":"Asia/Nicosia","paused":false,"schedule":[{"day":"mon","paused":false,"times":["20:03","21:48"]},{"day":"tue","paused":false,"times":["20:27","21:43"]},{"day":"wed","paused":false,"times":["20:02","21:18"]},{"day":"thu","paused":false,"times":["19:37","20:06"]},{"day":"fri","paused":false,"times":["17:40","18:56"]},{"day":"sat","paused":false,"times":["12:46","19:36"]},{"day":"sun","paused":false,"times":["19:25","20:12"]}]},{"id":"6af72c9b62b70b94b01c31b2","lang":"en","service":"tiktok","name":"whaaatafact","timezone":"Asia/Nicosia","paused":false,"schedule":[{"day":"mon","paused":false,"times":["08:19","09:35"]},{"day":"tue","paused":false,"times":["06:11","07:55"]},{"day":"wed","paused":false,"times":["06:35","22:38"]},{"day":"thu","paused":false,"times":["21:46","22:31"]},{"day":"fri","paused":false,"times":["20:27","21:11"]},{"day":"sat","paused":false,"times":["18:24","19:40"]},{"day":"sun","paused":false,"times":["09:39","10:07"]}]},{"id":"6af72c5d62b70b94b01c2f3c","lang":"en","service":"instagram","name":"whaaatafact","timezone":"Asia/Nicosia","paused":false,"schedule":[{"day":"mon","paused":false,"times":["18:59","20:01"]},{"day":"tue","paused":false,"times":["18:30","19:46"]},{"day":"wed","paused":false,"times":["10:59","18:05"]},{"day":"thu","paused":false,"times":["10:09","11:53"]},{"day":"fri","paused":false,"times":["06:08","07:52"]},{"day":"sat","paused":false,"times":["06:46","22:30"]},{"day":"sun","paused":false,"times":["19:59","22:41"]}]}],"posts":[],"warnings":[],"episodes":[{"lang":"ru","slug":"01-kurt-cobain","name":"Курт Кобейн"},{"lang":"ru","slug":"02-steve-jobs","name":"Стив Джобс"},{"lang":"ru","slug":"03-jason-statham","name":"Джейсон Стэтхэм"},{"lang":"ru","slug":"04-the-beatles","name":"The Beatles"},{"lang":"ru","slug":"05-johnny-sins","name":"Джонни Синс"},{"lang":"ru","slug":"06-hide-the-pain-harold","name":"Гарольд, скрывающий боль"},{"lang":"ru","slug":"07-valery-meladze","name":"Валерий Меладзе"},{"lang":"ru","slug":"08-david-bowie","name":"Дэвид Боуи"},{"lang":"ru","slug":"09-nicolas-cage","name":"Николас Кейдж"},{"lang":"ru","slug":"10-chuck-norris","name":"Чак Норрис"},{"lang":"ru","slug":"11-chuck-norris-2","name":"Чак Норрис, часть 2"},{"lang":"ru","slug":"12-ksenia-sobchak","name":"Ксения Собчак"},{"lang":"ru","slug":"13-zendaya","name":"Зендея"},{"lang":"ru","slug":"14-kim-kardashian","name":"Ким Кардашьян"},{"lang":"ru","slug":"15-sydney-sweeney","name":"Сидни Суини"},{"lang":"ru","slug":"16-taylor-swift","name":"Тейлор Свифт"},{"lang":"ru","slug":"17-billie-eilish","name":"Билли Айлиш"},{"lang":"ru","slug":"18-aryna-sabalenka","name":"Арина Соболенко"},{"lang":"ru","slug":"19-anne-hathaway","name":"Энн Хэтэуэй"},{"lang":"ru","slug":"20-gta","name":"Серия игр GTA"},{"lang":"ru","slug":"21-aviasales","name":"Aviasales"},{"lang":"ru","slug":"22-binance-hack","name":"Взлом Binance"},{"lang":"ru","slug":"23-lewis-hamilton","name":"Льюис Хэмилтон"},{"lang":"en","slug":"01-kurt-cobain","name":"Kurt Cobain"},{"lang":"en","slug":"02-steve-jobs","name":"Steve Jobs"},{"lang":"en","slug":"03-jason-statham","name":"Jason Statham"},{"lang":"en","slug":"04-the-beatles","name":"The Beatles"},{"lang":"en","slug":"05-johnny-sins","name":"Johnny Sins"},{"lang":"en","slug":"06-hide-the-pain-harold","name":"Hide the Pain Harold"},{"lang":"en","slug":"08-david-bowie","name":"David Bowie"},{"lang":"en","slug":"09-nicolas-cage","name":"Nicolas Cage"},{"lang":"en","slug":"10-chuck-norris","name":"Chuck Norris"},{"lang":"en","slug":"11-chuck-norris-2","name":"Chuck Norris, part 2"},{"lang":"en","slug":"13-zendaya","name":"Zendaya"},{"lang":"en","slug":"14-kim-kardashian","name":"Kim Kardashian"},{"lang":"en","slug":"15-sydney-sweeney","name":"Sydney Sweeney"},{"lang":"en","slug":"16-taylor-swift","name":"Taylor Swift"},{"lang":"en","slug":"17-billie-eilish","name":"Billie Eilish"},{"lang":"en","slug":"18-aryna-sabalenka","name":"Aryna Sabalenka"},{"lang":"en","slug":"19-anne-hathaway","name":"Anne Hathaway"},{"lang":"en","slug":"20-gta","name":"GTA series"},{"lang":"en","slug":"21-aviasales","name":"Aviasales"},{"lang":"en","slug":"22-binance-hack","name":"The Binance hack"},{"lang":"en","slug":"23-lewis-hamilton","name":"Lewis Hamilton"}],"languages":{"ru":{"episodes":23,"metricsOk":true},"en":{"episodes":21,"metricsOk":true}}},"history":{"days":{}},"requests":null,"thumbs":{"ru/01-kurt-cobain":"thumbs/ru/01-kurt-cobain-2c4e574d.jpg","ru/02-steve-jobs":"thumbs/ru/02-steve-jobs-9c501006.jpg","ru/03-jason-statham":"thumbs/ru/03-jason-statham-3e910476.jpg","ru/04-the-beatles":"thumbs/ru/04-the-beatles-c3736a63.jpg","ru/05-johnny-sins":"thumbs/ru/05-johnny-sins-8adccc42.jpg","ru/06-hide-the-pain-harold":"thumbs/ru/06-hide-the-pain-harold-8e69bdae.jpg","ru/07-valery-meladze":"thumbs/ru/07-valery-meladze-6e4be20c.jpg","ru/08-david-bowie":"thumbs/ru/08-david-bowie-c8f884bb.jpg","ru/09-nicolas-cage":"thumbs/ru/09-nicolas-cage-39d58e87.jpg","ru/10-chuck-norris":"thumbs/ru/10-chuck-norris-9216af0d.jpg","ru/11-chuck-norris-2":"thumbs/ru/11-chuck-norris-2-7210b681.jpg","ru/12-ksenia-sobchak":"thumbs/ru/12-ksenia-sobchak-c153695c.jpg","ru/13-zendaya":"thumbs/ru/13-zendaya-1d3bd3f4.jpg","ru/14-kim-kardashian":"thumbs/ru/14-kim-kardashian-4313b18d.jpg","ru/15-sydney-sweeney":"thumbs/ru/15-sydney-sweeney-44b6a8e1.jpg","ru/16-taylor-swift":"thumbs/ru/16-taylor-swift-68db15d1.jpg","ru/17-billie-eilish":"thumbs/ru/17-billie-eilish-a7e192ad.jpg","ru/18-aryna-sabalenka":"thumbs/ru/18-aryna-sabalenka-12a82f91.jpg","ru/19-anne-hathaway":"thumbs/ru/19-anne-hathaway-e8309b71.jpg","ru/20-gta":"thumbs/ru/20-gta-ff9ae40a.jpg","ru/21-aviasales":"thumbs/ru/21-aviasales-50e542c8.jpg","ru/22-binance-hack":"thumbs/ru/22-binance-hack-51089a56.jpg","ru/23-lewis-hamilton":"thumbs/ru/23-lewis-hamilton-46a965e9.jpg","en/01-kurt-cobain":"thumbs/en/01-kurt-cobain-8dacc474.jpg","en/02-steve-jobs":"thumbs/en/02-steve-jobs-d13b56b9.jpg","en/03-jason-statham":"thumbs/en/03-jason-statham-6f29c12b.jpg","en/04-the-beatles":"thumbs/en/04-the-beatles-d005531a.jpg","en/05-johnny-sins":"thumbs/en/05-johnny-sins-d549c84c.jpg","en/06-hide-the-pain-harold":"thumbs/en/06-hide-the-pain-harold-891d8107.jpg","en/08-david-bowie":"thumbs/en/08-david-bowie-f6dcbecf.jpg","en/09-nicolas-cage":"thumbs/en/09-nicolas-cage-1ee7b2ca.jpg","en/10-chuck-norris":"thumbs/en/10-chuck-norris-da6d9594.jpg","en/11-chuck-norris-2":"thumbs/en/11-chuck-norris-2-e17dbdf0.jpg","en/13-zendaya":"thumbs/en/13-zendaya-dac93557.jpg","en/14-kim-kardashian":"thumbs/en/14-kim-kardashian-1e0fc33c.jpg","en/15-sydney-sweeney":"thumbs/en/15-sydney-sweeney-7596b77d.jpg","en/16-taylor-swift":"thumbs/en/16-taylor-swift-fba7fda9.jpg","en/17-billie-eilish":"thumbs/en/17-billie-eilish-90e3a4ff.jpg","en/18-aryna-sabalenka":"thumbs/en/18-aryna-sabalenka-ae45b6a1.jpg","en/19-anne-hathaway":"thumbs/en/19-anne-hathaway-e5c02936.jpg","en/20-gta":"thumbs/en/20-gta-5727fcda.jpg","en/21-aviasales":"thumbs/en/21-aviasales-8b8a7e6d.jpg","en/22-binance-hack":"thumbs/en/22-binance-hack-a8347f1f.jpg","en/23-lewis-hamilton":"thumbs/en/23-lewis-hamilton-ce35402d.jpg"}};
+const NETS = ["youtube", "tiktok", "instagram"];
+const NET_NAME = { youtube: "YouTube", tiktok: "TikTok", instagram: "Instagram" };
+const LANG_NAME = { ru: "RU", en: "EN" };
+const METRIC_NAME = { views: "Просмотры", impressions: "Показы", reach: "Охват", reactions: "Реакции", likes: "Лайки",
+  comments: "Комментарии", shares: "Репосты", reposts: "Репосты", saves: "Сохранения", follows: "Подписки",
+  engagementRate: "Вовлечённость", averageTimeWatched: "Среднее время просмотра", totalTimeWatched: "Общее время просмотра",
+  viewers: "Зрители", clicks: "Клики", quotes: "Цитаты" };
+const state = { lang: "all", net: "all", period: "30", sort: "new" };
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const full = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+const compact = new Intl.NumberFormat("ru-RU", { notation: "compact", maximumFractionDigits: 1 });
+const fmt = (n) => (n == null ? "—" : full.format(n));
+const big = (n) => (n == null ? "—" : n >= 10000 ? compact.format(n) : full.format(n));
+const views = (m) => m.views ?? m.impressions ?? m.reach ?? null;
+const shares = (m) => (m.shares ?? 0) + (m.reposts ?? 0);
+const day = (iso) => (iso || "").slice(0, 10);
+const dm = (d) => d.slice(8, 10) + "." + d.slice(5, 7);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+function match(p) {
+  return (state.lang === "all" || p.lang === state.lang) && (state.net === "all" || p.service === state.net);
+}
+const sent = () => DATA.latest.posts.filter((p) => p.status === "sent" && match(p));
+
+// --- история: значения метрик поста на каждый день (с переносом вперёд) ---
+function dailySeries() {
+  const days = Object.keys(DATA.history.days || {}).sort();
+  const byId = Object.fromEntries(DATA.latest.posts.map((p) => [p.id, p]));
+  const cur = {}; const rows = [];
+  for (const d of days) {
+    for (const [id, vals] of Object.entries(DATA.history.days[d])) cur[id] = Object.assign(cur[id] || {}, vals);
+    const sum = { youtube: 0, tiktok: 0, instagram: 0 };
+    for (const [id, m] of Object.entries(cur)) {
+      const p = byId[id];
+      if (p && match(p) && sum[p.service] != null) sum[p.service] += views(m) || 0;
+    }
+    rows.push({ d, sum });
+  }
+  // прирост за сутки
+  const out = [];
+  for (let i = 1; i < rows.length; i++) {
+    const g = {};
+    for (const n of NETS) g[n] = Math.max(0, rows[i].sum[n] - rows[i - 1].sum[n]);
+    out.push({ d: rows[i].d, g, total: rows[i].sum });
+  }
+  return { gains: out, totals: rows };
+}
+
+// --- плитки ---
+function renderTiles() {
+  const ps = sent();
+  const sum = (f) => ps.reduce((a, p) => a + (f(p.metrics) || 0), 0);
+  const { gains } = dailySeries();
+  const last7 = gains.slice(-7).reduce((a, r) => a + NETS.reduce((b, n) => b + r.g[n], 0), 0);
+  const eps = new Set(ps.map((p) => p.lang + "/" + (p.episode || p.id)));
+  const anyViews = ps.some((p) => views(p.metrics) != null);
+  const tiles = [
+    ["Просмотры", anyViews ? sum(views) : null, gains.length ? "+" + big(last7) + " за последние " + Math.min(7, gains.length) + " дн." : ""],
+    ["Реакции", sum((m) => m.reactions ?? m.likes), ""],
+    ["Комментарии", sum((m) => m.comments), ""],
+    ["Репосты", sum(shares), ""],
+    ["Вышло постов", ps.length, eps.size + " " + plural(eps.size, "выпуск", "выпуска", "выпусков")],
+  ];
+  $("tiles").innerHTML = tiles.map(([l, v, d]) =>
+    `<div class="tile"><div class="label">${l}</div><div class="value" title="${fmt(v)}">${big(v)}</div><div class="delta">${esc(d)}</div></div>`).join("");
+}
+function plural(n, one, few, many) {
+  const a = n % 10, b = n % 100;
+  return a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 12 || b > 14) ? few : many;
+}
+
+// --- линейный график ---
+function niceMax(v) {
+  if (v <= 0) return 10;
+  const p = Math.pow(10, Math.floor(Math.log10(v))); const f = v / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p;
+}
+function renderLine() {
+  const host = $("line");
+  let { gains } = dailySeries();
+  const per = +state.period;
+  if (per) gains = gains.slice(-per);
+  const nets = state.net === "all" ? NETS : [state.net];
+  $("lineLegend").innerHTML = nets.length > 1 ? nets.map((n) => `<span><i class="key k-${n}"></i>${NET_NAME[n]}</span>`).join("") : "";
+  if (gains.length < 2) {
+    host.innerHTML = `<div class="empty">График появится, когда накопится хотя бы три ежедневных среза статистики${gains.length ? " (сейчас их " + (gains.length + 1) + ")" : ""}.</div>`;
+    return;
+  }
+  const W = Math.max(320, host.clientWidth || 900), H = 260, L = 60, R = 14, T = 12, B = 28;
+  const max = niceMax(Math.max(...gains.map((r) => Math.max(...nets.map((n) => r.g[n])))));
+  const x = (i) => L + (i * (W - L - R)) / (gains.length - 1);
+  const y = (v) => T + (1 - v / max) * (H - T - B);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Прирост просмотров по дням">`;
+  for (let i = 0; i <= 4; i++) {
+    const v = (max * i) / 4;
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${css("--line")}" stroke-width="1"/>`;
+    s += `<text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${max >= 10000 ? compact.format(v) : full.format(v)}</text>`;
+  }
+  const step = Math.ceil(gains.length / Math.max(2, Math.floor((W - L - R) / 64)));
+  gains.forEach((r, i) => { if (i % step === 0 || i === gains.length - 1) {
+    if (i !== gains.length - 1 && gains.length - 1 - i < step * 0.6) return;
+    s += `<text x="${x(i)}" y="${H - 8}" text-anchor="${i === gains.length - 1 ? "end" : i === 0 ? "start" : "middle"}">${dm(r.d)}</text>`; } });
+  for (const n of nets) {
+    const pts = gains.map((r, i) => `${x(i).toFixed(1)},${y(r.g[n]).toFixed(1)}`).join(" ");
+    s += `<polyline points="${pts}" fill="none" stroke="${css("--" + n)}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const li = gains.length - 1;
+    s += `<circle cx="${x(li)}" cy="${y(gains[li].g[n])}" r="4" fill="${css("--" + n)}" stroke="${css("--surface")}" stroke-width="2"/>`;
+  }
+  s += `<line id="cross" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="${css("--muted")}" stroke-width="1" visibility="hidden"/>`;
+  s += `<g id="dots"></g><rect id="hit" x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
+  host.innerHTML = s;
+  const hit = host.querySelector("#hit"), cross = host.querySelector("#cross"), dots = host.querySelector("#dots");
+  const move = (e) => {
+    const box = host.querySelector("svg").getBoundingClientRect();
+    const px = ((e.clientX - box.left) / box.width) * W;
+    const i = Math.max(0, Math.min(gains.length - 1, Math.round(((px - L) / (W - L - R)) * (gains.length - 1))));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+    dots.innerHTML = nets.map((n) => `<circle cx="${x(i)}" cy="${y(gains[i].g[n])}" r="4" fill="${css("--" + n)}" stroke="${css("--surface")}" stroke-width="2"/>`).join("");
+    tip(e, `<b>${dm(gains[i].d)}.${gains[i].d.slice(0, 4)}</b><br>` + nets.map((n) => `<i class="key k-${n}"></i>${NET_NAME[n]}: +${fmt(gains[i].g[n])}`).join("<br>"));
+  };
+  hit.addEventListener("pointermove", move);
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); dots.innerHTML = ""; untip(); });
+}
+
+// --- подсказка ---
+function tip(e, html) {
+  const t = $("tip"); t.innerHTML = html; t.style.opacity = 1;
+  const w = t.offsetWidth, h = t.offsetHeight;
+  t.style.left = Math.min(window.innerWidth - w - 8, e.clientX + 14) + "px";
+  t.style.top = Math.max(8, e.clientY - h - 12) + "px";
+}
+function untip() { $("tip").style.opacity = 0; }
+
+// --- каналы ---
+function renderChannels() {
+  const rows = DATA.latest.channels.filter((c) => (state.lang === "all" || c.lang === state.lang) && (state.net === "all" || c.service === state.net))
+    .map((c) => {
+      const ps = DATA.latest.posts.filter((p) => p.channelId === c.id && p.status === "sent");
+      const sum = (f) => ps.reduce((a, p) => a + (f(p.metrics) || 0), 0);
+      const v = sum(views);
+      return { c, n: ps.length, v, r: sum((m) => m.reactions ?? m.likes), cm: sum((m) => m.comments), sh: sum(shares), avg: ps.length ? v / ps.length : null,
+        queued: DATA.latest.posts.filter((p) => p.channelId === c.id && p.status === "scheduled").length };
+    });
+  if (!rows.length) { $("channels").innerHTML = `<tr><td class="empty">Каналов пока нет — данные появятся после первого сбора статистики.</td></tr>`; return; }
+  const max = Math.max(1, ...rows.map((r) => r.v));
+  $("channels").innerHTML = `<thead><tr><th>Канал</th><th>Соцсеть</th><th class="num">Постов</th><th class="num">В очереди</th><th class="num">Просмотры</th><th style="width:22%"></th>
+    <th class="num">В среднем на пост</th><th class="num">Реакции</th><th class="num">Комментарии</th><th class="num">Репосты</th></tr></thead><tbody>` +
+    rows.map((r) => `<tr><td style="white-space:nowrap"><span class="badge">${LANG_NAME[r.c.lang]}</span> ${esc(r.c.name)}${r.c.paused ? ' <span class="status err">· пауза</span>' : ""}</td>
+      <td style="white-space:nowrap"><i class="key k-${r.c.service}"></i>${NET_NAME[r.c.service]}</td><td class="num">${fmt(r.n)}</td><td class="num">${fmt(r.queued)}</td><td class="num">${fmt(r.v)}</td>
+      <td><div class="bar" data-tip="${NET_NAME[r.c.service]}: ${fmt(r.v)} просмотров"><i style="width:${(r.v / max) * 100}%;background:var(--${r.c.service})"></i></div></td>
+      <td class="num">${r.avg == null ? "—" : fmt(r.avg)}</td><td class="num">${fmt(r.r)}</td><td class="num">${fmt(r.cm)}</td><td class="num">${fmt(r.sh)}</td></tr>`).join("") + "</tbody>";
+}
+
+// --- выпуски: карточка с превью и показателями по трём сетям ---
+const RANK = { sent: 3, sending: 2, scheduled: 1, error: 0 };
+function episodeCards() {
+  const list = (DATA.latest.episodes && DATA.latest.episodes.length) ? DATA.latest.episodes
+    : [...new Map(DATA.latest.posts.filter((p) => p.episode).map((p) => [p.lang + "/" + p.episode, { lang: p.lang, slug: p.episode, name: p.name }])).values()];
+  const posts = {};
+  for (const p of DATA.latest.posts) {
+    if (!p.episode) continue;
+    const k = p.lang + "/" + p.episode + "/" + p.service;
+    if (!posts[k] || RANK[p.status] > RANK[posts[k].status]) posts[k] = p;
+  }
+  const nets = state.net === "all" ? NETS : [state.net];
+  return list.filter((e) => state.lang === "all" || e.lang === state.lang).map((e) => {
+    const per = Object.fromEntries(nets.map((n) => [n, posts[e.lang + "/" + e.slug + "/" + n] || null]));
+    const live = nets.map((n) => per[n]).filter((p) => p && p.status === "sent");
+    const dates = live.map((p) => day(p.sentAt || p.dueAt)).filter(Boolean).sort();
+    return { e, per, nets, num: parseInt(e.slug, 10) || 0, date: dates[0] || null,
+      total: live.reduce((a, p) => a + (views(p.metrics) || 0), 0), hasViews: live.some((p) => views(p.metrics) != null) };
+  });
+}
+function renderEpisodes() {
+  const rows = episodeCards();
+  if (!rows.length) { $("episodes").innerHTML = `<div class="empty">Выпусков пока нет — список появится после первого сбора статистики.</div>`; return; }
+  const by = { new: (a, b) => (b.date || "").localeCompare(a.date || "") || a.num - b.num, views: (a, b) => b.total - a.total || a.num - b.num };
+  rows.sort((a, b) => by[state.sort](a, b) || a.e.lang.localeCompare(b.e.lang));
+  const chan = Object.fromEntries(DATA.latest.channels.map((c) => [c.id, c]));
+  const when = (iso, tz) => { try { return new Intl.DateTimeFormat("ru-RU", { timeZone: tz || "UTC", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(iso)).replace(", ", " в "); } catch (e) { return day(iso); } };
+  const thumbs = DATA.thumbs || {};
+  $("episodes").innerHTML = rows.map((r) => {
+    const src = thumbs[r.e.lang + "/" + r.e.slug];
+    const numTxt = String(r.e.slug).split("-")[0];
+    const body = r.nets.map((n) => {
+      const p = r.per[n]; const name = `<td class="net"><i class="key k-${n}"></i>${NET_NAME[n]}</td>`;
+      if (!p) return `<tr>${name}<td class="wait" colspan="5">ещё не в очереди</td></tr>`;
+      if (p.status === "error") return `<tr data-tip="${esc(p.error || "Соцсеть отклонила пост")}">${name}<td class="wait status err" colspan="5">✕ ошибка публикации</td></tr>`;
+      if (p.status !== "sent") return `<tr>${name}<td class="wait" colspan="5">выйдет ${when(p.dueAt, (chan[p.channelId] || {}).timezone)}</td></tr>`;
+      const m = p.metrics || {};
+      const all = Object.entries(m).filter(([k]) => METRIC_NAME[k]).map(([k, v]) => METRIC_NAME[k] + ": " + (p.units && p.units[k] ? full.format(Math.round(v * 100) / 100) + "%" : fmt(v))).join("<br>");
+      const tipHtml = `<b>${NET_NAME[n]}</b> · вышел ${when(p.sentAt || p.dueAt, (chan[p.channelId] || {}).timezone)}<br>` + (all || "Метрик пока нет — Buffer подтягивает их в течение суток");
+      return `<tr data-tip="${esc(tipHtml)}">${name}<td class="num"><b>${fmt(views(m))}</b></td><td class="num">${fmt(m.reactions ?? m.likes ?? null)}</td><td class="num">${fmt(m.comments ?? null)}</td><td class="num">${fmt(m.shares != null || m.reposts != null ? shares(m) : null)}</td>
+        <td class="go">${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener" aria-label="Открыть пост в ${NET_NAME[n]}">↗</a>` : ""}</td></tr>`;
+    }).join("");
+    const meta = r.date ? `вышел ${dm(r.date)}.${r.date.slice(0, 4)}` + (r.hasViews ? ` · всего ${fmt(r.total)} ${plural(r.total, "просмотр", "просмотра", "просмотров")}` : "") : "ещё не вышел";
+    return `<article class="epc">
+      <div class="thumb">${src ? `<img src="${esc(src)}" alt="Обложка: ${esc(r.e.name)}" loading="lazy" width="108" height="192">` : esc(numTxt)}</div>
+      <div><div class="title"><span class="badge">${LANG_NAME[r.e.lang]}</span> <span class="rank">${esc(numTxt)}</span> ${esc(r.e.name)}</div><div class="meta">${meta}</div></div>
+      <table><thead><tr><th></th><th class="num">Просмотры</th><th class="num">Реакции</th><th class="num" title="Комментарии">Коммент.</th><th class="num">Репосты</th><th></th></tr></thead><tbody>${body}</tbody></table>
+    </article>`; }).join("");
+}
+
+// --- запросы зрителей ---
+function renderRequests() {
+  const rq = DATA.requests;
+  const items = ((rq && rq.items) || []).filter((r) => state.lang === "all" || !r.lang || r.lang === state.lang);
+  if (!rq) { $("reqSub").textContent = "Раздел заполнится на втором этапе, когда подключим сбор комментариев: Buffer отдаёт только их количество, без текста."; $("req").innerHTML = ""; return; }
+  $("reqSub").textContent = "По комментариям зрителей" + (rq.updatedAt ? ", обновлено " + dm(day(rq.updatedAt)) : "") + ".";
+  const max = Math.max(1, ...items.map((r) => r.count));
+  $("req").innerHTML = items.slice(0, 15).map((r, i) => `<li><span class="rank">${i + 1}</span><span>${esc(r.name)}
+    <div class="bar" style="margin-top:4px"><i style="width:${(r.count / max) * 100}%;background:var(--youtube)"></i></div></span><span class="num" style="text-align:right">${fmt(r.count)}</span></li>`).join("") || `<li class="empty">Запросов пока нет.</li>`;
+}
+
+// --- очередь и расписание ---
+function renderQueue() {
+  const chan = Object.fromEntries(DATA.latest.channels.map((c) => [c.id, c]));
+  const local = (iso, tz) => { try { return new Intl.DateTimeFormat("ru-RU", { timeZone: tz, day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(iso)); } catch (e) { return iso; } };
+  const ps = DATA.latest.posts.filter(match);
+  const errs = ps.filter((p) => p.status === "error");
+  const q = ps.filter((p) => p.status === "scheduled" && p.dueAt).sort((a, b) => (a.dueAt > b.dueAt ? 1 : -1)).slice(0, 12);
+  if (!errs.length && !q.length) { $("queue").innerHTML = `<tr><td class="empty">Очередь пуста.</td></tr>`; return; }
+  $("queue").innerHTML = `<thead><tr><th>Когда</th><th>Выпуск</th><th>Соцсеть</th><th>Статус</th></tr></thead><tbody>` +
+    errs.map((p) => `<tr><td style="white-space:nowrap">${local(p.dueAt, (chan[p.channelId] || {}).timezone)}</td><td><span class="badge">${LANG_NAME[p.lang]}</span> ${esc(p.name)}</td><td style="white-space:nowrap"><i class="key k-${p.service}"></i>${NET_NAME[p.service]}</td><td class="status err">✕ Ошибка: ${esc(p.error || "не опубликован")}</td></tr>`).join("") +
+    q.map((p) => `<tr><td style="white-space:nowrap">${local(p.dueAt, (chan[p.channelId] || {}).timezone)}</td><td><span class="badge">${LANG_NAME[p.lang]}</span> ${esc(p.name)}</td><td style="white-space:nowrap"><i class="key k-${p.service}"></i>${NET_NAME[p.service]}</td><td class="status">В очереди</td></tr>`).join("") + "</tbody>";
+}
+function renderSched() {
+  const DAY = { mon: "Пн", tue: "Вт", wed: "Ср", thu: "Чт", fri: "Пт", sat: "Сб", sun: "Вс" };
+  const cs = DATA.latest.channels.filter((c) => (state.lang === "all" || c.lang === state.lang) && (state.net === "all" || c.service === state.net));
+  if (!cs.length) { $("sched").innerHTML = `<tr><td class="empty">Нет данных.</td></tr>`; return; }
+  $("sched").innerHTML = `<thead><tr><th>Канал</th><th>Слоты</th><th>Пояс</th></tr></thead><tbody>` + cs.map((c) => {
+    const groups = new Map();
+    for (const r of c.schedule || []) { if (r.paused || !(r.times || []).length) continue;
+      const t = [...r.times].sort().join(", "); const d = DAY[String(r.day).toLowerCase().slice(0, 3)] || r.day;
+      groups.set(t, (groups.get(t) || []).concat(d)); }
+    const txt = [...groups].map(([t, ds]) => (ds.length === 7 ? "ежедневно" : ds.join(", ")) + " — " + t).join("<br>") || '<span class="status err">слотов нет</span>';
+    return `<tr><td><span class="badge">${LANG_NAME[c.lang]}</span> <i class="key k-${c.service}"></i>${NET_NAME[c.service]}</td><td>${txt}</td><td class="sub">${esc(c.timezone || "")}</td></tr>`; }).join("") + "</tbody>";
+}
+
+function render() {
+  document.querySelectorAll(".seg").forEach((seg) => seg.querySelectorAll("button").forEach((b) =>
+    b.setAttribute("aria-pressed", String(state[seg.dataset.filter] === b.dataset.v))));
+  renderTiles(); renderLine(); renderChannels(); renderEpisodes(); renderRequests(); renderQueue(); renderSched();
+}
+document.querySelectorAll(".seg").forEach((seg) => seg.addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return; state[seg.dataset.filter] = b.dataset.v; render(); }));
+document.addEventListener("pointermove", (e) => { const b = e.target.closest && e.target.closest("[data-tip]"); if (b) tip(e, b.dataset.tip); else if (!e.target.closest || !e.target.closest("#line")) untip(); });
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderLine, 120); });
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+
+const g = DATA.latest.generatedAt;
+$("updated").textContent = g ? "Обновлено " + new Intl.DateTimeFormat("ru-RU", { dateStyle: "long", timeStyle: "short" }).format(new Date(g)) : "Данных пока нет";
+$("warnings").innerHTML = (DATA.latest.warnings || []).map((w) => `<p class="warn">${esc(w)}</p>`).join("");
+render();
+</script>
+</body>
+</html>
